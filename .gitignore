@@ -2,6 +2,9 @@
 /dist
 /node_modules
 
+# Test Routes
+/src/test
+
 # Logs
 logs
 *.log

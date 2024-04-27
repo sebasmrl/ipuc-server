@@ -19,3 +19,13 @@ npm install
 ```
 npm run start:dev
 ```
+
+
+## Dependencias
+
+```
+npm i @nestjs/typeorm typeorm
+npm install pg
+npm i @nestjs/config
+npm i class-validator class-transformer
+```
