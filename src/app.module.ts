@@ -8,6 +8,7 @@ import { PositionsModule } from './positions/positions.module';
 import { ChurchesModule } from './churches/churches.module';
 import { TestModule } from './test/test.module';
 import { DirectivesModule } from './directives/directives.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { DirectivesModule } from './directives/directives.module';
     ChurchesModule,
     TestModule,
     DirectivesModule,
+    CommonModule,
   ],
   controllers: [],
   providers: [],

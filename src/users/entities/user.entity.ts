@@ -26,6 +26,9 @@ export class User {
     @Column({ type: 'date'})
     birthdate: Date;  //1855-03-30
 
+    @Column({ type: 'text', nullable: true })
+    bloodType: string;
+
     @Column({ type:'bool', nullable:true})
     married: boolean;
 
@@ -86,9 +89,6 @@ export class User {
         { eager:true, cascade:true}
     ) 
     positions:Position[];
-    
-    //TODO: relation with positions[]
-    // { tipo:string [nacional, distrital, local ], name:'presidente'(unico), district?:number, churchId?: from:Date, to: Date, isActive:bool } 
     
     //TODO: relation with image
 
