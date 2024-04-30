@@ -1,6 +1,9 @@
 import { Type } from "class-transformer";
 import { IsArray, IsBoolean, IsDate, IsEmail, IsIn, IsNumber, IsOptional, IsString, IsUUID, Matches, MinLength } from "class-validator";
 
+import { Church } from "src/churches/entities/church.entity";
+import { Position } from "src/positions/entities/position.entity";
+
 export class CreateUserDto {
 
     @IsEmail()
@@ -43,6 +46,7 @@ export class CreateUserDto {
     @IsBoolean()
     isBaptized?:boolean;
 
+    @IsOptional()
     @IsDate()
     @Type( ()=>Date)
     birthBaptized?: Date;
@@ -51,6 +55,7 @@ export class CreateUserDto {
     @IsBoolean()
     holySpirit?: boolean;
 
+    @IsOptional()
     @IsDate()
     @Type( ()=>Date)
     dateHolySpirit?: Date;
@@ -96,12 +101,12 @@ export class CreateUserDto {
     @IsOptional()
     @IsString()
     @IsUUID()
-    church?:string;
+    church?:Church;
     
     @IsOptional()
     @IsUUID()
     @IsArray()
     @IsString({ each:true })
-    positions?:string[];
+    positions?:Position[];
 
 }

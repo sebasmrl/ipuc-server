@@ -1,5 +1,5 @@
-import { Type } from "class-transformer";
-import { IsOptional, IsPositive, Min } from "class-validator";
+import { Transform, Type } from "class-transformer";
+import { IsBoolean, IsBooleanString, IsOptional, IsPositive, Min } from "class-validator";
 
 export class PaginationDto{
 
@@ -12,4 +12,12 @@ export class PaginationDto{
     @IsPositive()
     @Type( ()=> Number)
     limit?: number;
+
+    @IsBoolean()
+    @IsOptional()
+    @Transform(({ value} ) => { 
+        console.log("TRANSFORM: ",typeof value, value)
+        return  (value == 'false' || value==false) ? false: true;
+        } )
+    activeRegisters?:boolean;
 }
