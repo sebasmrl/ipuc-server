@@ -1,7 +1,7 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Like, Repository } from 'typeorm';
+import { DataSource, Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
@@ -14,7 +14,8 @@ export class UsersService {
 
   constructor(  
     @InjectRepository(User) 
-    private readonly userRepository: Repository<User>
+    private readonly userRepository: Repository<User>,
+    private readonly datasource: DataSource
   ){}
 
   async create(createUserDto: CreateUserDto) {
@@ -23,7 +24,7 @@ export class UsersService {
       const user = await this.userRepository.save(nUser);
       return user;
     }catch(e){
-      this.dbHandlerError(e)
+      this.handlerDBError(e)
     }
   }
 
@@ -36,7 +37,6 @@ export class UsersService {
       : { isActive:activeRegisters}
     
     const users = this.userRepository.find({
-      //select: {id:true, fullname:true },
       where: condition,
       skip: skip,
       take:limit
@@ -60,28 +60,50 @@ export class UsersService {
     return user;
   }
 
-  update(id: string, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+
+    const { positions, church, ...rest } = updateUserDto;
+
+    if( Object.keys(rest).length == 0) throw new BadRequestException('El cuerpo de la petición no puede ser vacío');
+    const user = await this.userRepository.existsBy({id});
+    if (!user) throw new NotFoundException(`Usuario con id: ${id} no existe en DB`);
+
+    const qr = this.datasource.createQueryRunner();
+    await qr.connect();
+    await qr.startTransaction();
+
+    try{
+      await qr.manager.update(User, {id}, rest)
+      const user= await qr.manager.findOneBy(User,{id}); //TODO: capture from token after
+      await qr.commitTransaction();
+      await qr.release();
+      return  user;
+    }catch(e){
+      await qr.rollbackTransaction();
+      await qr.release();
+      this.handlerDBError(e);
+    }
+
   }
 
   async remove(id: string) {
-    const user = await this.findOne(id);
+    const user = await this.userRepository.exists({ where: { id: id } });
     if( !user) throw new BadRequestException(`User with id:${id} does not exist`);
 
-    const { church, positions, ...rest } = user;
-
-    return this.userRepository.update({id:id},
-      {
-        ...rest,
-        isActive: false
-      });
+    await this.userRepository.update(
+      {id:id},
+      { isActive: false }
+    );
+    return true;
   }
 
-  private dbHandlerError(e:any){
+  private handlerDBError(e:any){
+    this.logger.error(e.message)
     if(e.code=='23505'){
       this.logger.error(e.detail)
       throw new BadRequestException(e.detail); 
     }
+    throw new InternalServerErrorException("Unexpected error, check server logs");
   }
 
 }

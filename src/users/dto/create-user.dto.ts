@@ -104,7 +104,6 @@ export class CreateUserDto {
     church?:Church;
     
     @IsOptional()
-    @IsUUID()
     @IsArray()
     @IsString({ each:true })
     positions?:Position[];

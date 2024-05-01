@@ -17,7 +17,8 @@ export class PaginationDto{
     @IsOptional()
     @Transform(({ value} ) => { 
         console.log("TRANSFORM: ",typeof value, value)
-        return  (value == 'false' || value==false) ? false: true;
+        return  (value == 'false' || value==false) 
+                ? false: true;
         } )
     activeRegisters?:boolean;
 }
