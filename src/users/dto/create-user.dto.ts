@@ -40,7 +40,7 @@ export class CreateUserDto {
 
     @IsOptional()
     @IsBoolean()
-    married?: boolean;
+    isMarried?: boolean;
 
     @IsOptional()
     @IsBoolean()
@@ -105,7 +105,7 @@ export class CreateUserDto {
     
     @IsOptional()
     @IsArray()
-    @IsString({ each:true })
+    @IsUUID('all',{ each:true })
     positions?:Position[];
 
 }

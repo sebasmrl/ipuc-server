@@ -1,7 +1,8 @@
-import { Church } from "src/churches/entities/church.entity";
-import { StringModifiers } from "src/common/helpers/string-modifiers.helper";
-import { Position } from "src/positions/entities/position.entity";
 import { BeforeInsert, Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+
+import { Church } from "src/churches/entities/church.entity";
+import { Position } from "src/positions/entities/position.entity";
+import { StringModifiers } from "src/common/helpers";
 
 @Entity({name:'users'})
 export class User {
@@ -94,7 +95,7 @@ export class User {
     //TODO: relation with image
 
     @BeforeInsert()
-    beforeUserInsert(){
+    beforeUserInsert():void{
        this.fullname = StringModifiers.toUpperCase(this.fullname);
        this.lastname = StringModifiers.toUpperCase(this.lastname);
     }

@@ -1,3 +1,4 @@
+import { IsIn } from "class-validator";
 import { Church } from "src/churches/entities/church.entity";
 import { Directive } from "src/directives/entities/directive.entity";
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
@@ -21,17 +22,24 @@ export class Shepherd {
     @Column({ type: 'text' })
     lastname: string;
 
-    @Column({ type: 'text' })
-    gender:string;
-
     @Column({ type: 'bigint' })
     tel:number;
 
     @Column({ type: 'date'})
     birthdate: Date;
 
-    @Column({ type:'bool', default:false})
-    married: boolean;
+    @Column({ type: 'text', nullable:true })
+    @IsIn(['A+','B+','O+','AB+','A-','B-','O-','AB-'])
+    bloodType:string;
+
+    @Column({ type:'bool', default:true})
+    isMarried: boolean;
+
+    @Column({ type: 'boolean', default:false })
+    isRetired: boolean;
+
+    @Column({ type: 'date', nullable:true})
+    dateRetired:Date;
 
     @Column({ type: 'date', nullable:true})
     birthBaptized: Date;
@@ -40,9 +48,6 @@ export class Shepherd {
     dateHolySpirit: Date;
     
     
-    @Column({type: 'date', nullable: true})
-    ordinationDate: Date;
-
     @Column({ type: 'text'})
     nationality: string;
 
@@ -50,9 +55,7 @@ export class Shepherd {
     provinceOfBirth: string;
 
     @Column({ type: 'text' })
-    cityOfBirth: string;
-
-     
+    cityOfBirth: string; 
     
     @Column({type: 'text' })
     countryOfResidence: string;
@@ -66,7 +69,6 @@ export class Shepherd {
     @Column({type: 'text', nullable:true})
     address: string;
 
-    
 
     @OneToOne(
         ()=>Church,

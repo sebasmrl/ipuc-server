@@ -1,11 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePositionDto } from './dto/create-position.dto';
 import { UpdatePositionDto } from './dto/update-position.dto';
+import { Repository } from 'typeorm';
+import { Position } from './entities/position.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class PositionsService {
+
+  constructor(
+    @InjectRepository(Position)
+    private readonly positionRepository: Repository<Position>
+  ){}
+
   create(createPositionDto: CreatePositionDto) {
-    return 'This action adds a new position';
+    const position = this.positionRepository.save(createPositionDto)
+    return position;
   }
 
   findAll() {

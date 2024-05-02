@@ -23,6 +23,8 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
 
+  
+
   //TODO:church most be a param  church/:church/:id
   @Get('church/:searchTerm')
   findOneByFullNameOrLastname(@Param('searchTerm' ) searchTerm: string){
@@ -36,6 +38,7 @@ export class UsersController {
 
   @Delete(':id')
   remove(@Param('id', ParseUUIDPipe) id: string) {
+    //TODO:Verify if it is the same user, when the authenticated person has a position or is a directive
     return this.usersService.remove(id);
   }
 }

@@ -1,15 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { CreateShepherdDto } from './dto/create-shepherd.dto';
 import { UpdateShepherdDto } from './dto/update-shepherd.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Shepherd } from './entities/shepherd.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ShepherdsService {
-  create(createShepherdDto: CreateShepherdDto) {
-    return 'This action adds a new shepherd';
+ 
+  constructor(
+    @InjectRepository(Shepherd)
+    private readonly shepherdRepository: Repository<Shepherd>
+  ){}
+
+  async create(createShepherdDto: CreateShepherdDto) {
+    const shepherd = this.shepherdRepository.create(createShepherdDto);
+    return await this.shepherdRepository.save(shepherd);
   }
 
   findAll() {
     return `This action returns all shepherds`;
+  }
+
+  findFoo(){
+    return ""
   }
 
   findOne(id: number) {

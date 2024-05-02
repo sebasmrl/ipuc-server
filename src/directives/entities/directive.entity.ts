@@ -8,10 +8,13 @@ export class Directive {
     id:string;
 
     @Column({type: 'text', default:'distrital'})
-    type: string; //nacional, distrital, local
+    type: string; //nacional, distrital
 
     @Column({type: 'text'})
     name:string;
+
+    @Column({type:'bigint', nullable:true})
+    district:number;
 
     @Column({type: 'date', nullable:true })
     from: Date;

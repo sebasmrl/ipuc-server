@@ -1,11 +1,13 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { DataSource, Like, Repository } from 'typeorm';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { And, DataSource, LessThan, Like, MoreThan, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+
 import { User } from './entities/user.entity';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
-import { StringModifiers } from 'src/common/helpers/string-modifiers.helper';
+
+import { StringModifiers, handlerDbError } from 'src/common/helpers';
 
 @Injectable()
 export class UsersService {
@@ -24,11 +26,11 @@ export class UsersService {
       const user = await this.userRepository.save(nUser);
       return user;
     }catch(e){
-      this.handlerDBError(e)
+      handlerDbError(e, this.logger)
     }
   }
 
-  findAll(paginationDto: PaginationDto) {
+  async findAll(paginationDto: PaginationDto) {
 
     const { skip=0, limit=10, activeRegisters} = paginationDto;
   
@@ -36,14 +38,20 @@ export class UsersService {
       ? {} 
       : { isActive:activeRegisters}
     
-    const users = this.userRepository.find({
-      where: condition,
+    const users = await this.userRepository.find({
+      relations:{positions:true},
+      where: {...condition, 
+        positions: {
+        from: LessThan(new Date()),
+        to: MoreThan(new Date())
+      }},
       skip: skip,
       take:limit
     });
 
     return users;
   }
+
 
   async findOne(id: string) {
     return await this.userRepository.findOneBy({id})
@@ -63,10 +71,15 @@ export class UsersService {
   async update(id: string, updateUserDto: UpdateUserDto) {
 
     const { positions, church, ...rest } = updateUserDto;
+    if(positions || church) throw new BadRequestException('Los campos (positions) o (church) no se pueden modificar')
 
     if( Object.keys(rest).length == 0) throw new BadRequestException('El cuerpo de la petición no puede ser vacío');
     const user = await this.userRepository.existsBy({id});
     if (!user) throw new NotFoundException(`Usuario con id: ${id} no existe en DB`);
+
+    if(rest.fullname) rest.fullname=StringModifiers.toUpperCase(rest.fullname);
+    if(rest.lastname) rest.lastname=StringModifiers.toUpperCase(rest.lastname);
+    
 
     const qr = this.datasource.createQueryRunner();
     await qr.connect();
@@ -74,21 +87,21 @@ export class UsersService {
 
     try{
       await qr.manager.update(User, {id}, rest)
-      const user= await qr.manager.findOneBy(User,{id}); //TODO: capture from token after
+      const user= await qr.manager.findOneBy(User,{id}); 
       await qr.commitTransaction();
       await qr.release();
       return  user;
     }catch(e){
       await qr.rollbackTransaction();
       await qr.release();
-      this.handlerDBError(e);
+      handlerDbError(e, this.logger);
     }
 
   }
 
   async remove(id: string) {
     const user = await this.userRepository.exists({ where: { id: id } });
-    if( !user) throw new BadRequestException(`User with id:${id} does not exist`);
+    if( !user) throw new BadRequestException(`Usuario con id:${id} no existe`);
 
     await this.userRepository.update(
       {id:id},
@@ -97,13 +110,10 @@ export class UsersService {
     return true;
   }
 
-  private handlerDBError(e:any){
-    this.logger.error(e.message)
-    if(e.code=='23505'){
-      this.logger.error(e.detail)
-      throw new BadRequestException(e.detail); 
-    }
-    throw new InternalServerErrorException("Unexpected error, check server logs");
+
+  foo(){
+    
   }
+  
 
 }

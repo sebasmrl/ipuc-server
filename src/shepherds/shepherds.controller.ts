@@ -16,6 +16,10 @@ export class ShepherdsController {
   findAll() {
     return this.shepherdsService.findAll();
   }
+  @Get('foo')
+  findFoo() {
+    return this.shepherdsService.findAll();
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
