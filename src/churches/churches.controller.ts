@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe } from '@nestjs/common';
 import { ChurchesService } from './churches.service';
 import { CreateChurchDto } from './dto/create-church.dto';
 import { UpdateChurchDto } from './dto/update-church.dto';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
 
 @Controller('churches')
 export class ChurchesController {
@@ -13,13 +14,13 @@ export class ChurchesController {
   }
 
   @Get()
-  findAll() {
-    return this.churchesService.findAll();
+  findAll(paginationDto: PaginationDto) {
+    return this.churchesService.findAll(paginationDto);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.churchesService.findOne(+id);
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return this.churchesService.findOne(id);
   }
 
   @Patch(':id')
@@ -28,7 +29,7 @@ export class ChurchesController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.churchesService.remove(+id);
+  remove(@Param('id', ParseUUIDPipe) id: string) {
+    return this.churchesService.remove(id);
   }
 }

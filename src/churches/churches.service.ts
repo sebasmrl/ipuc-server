@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 
 import { handlerDbError } from 'src/common/helpers';
 import { Church } from './entities/church.entity';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
 
 @Injectable()
 export class ChurchesService {
@@ -26,22 +27,24 @@ export class ChurchesService {
     }
   }
 
-  findAll() {
-    return this.churchRepository.findOne({ 
-      //select: {},
-      where: { slug: 'el_salado-10'}
-    })
+  async findAll(paginationDto:PaginationDto) {
+    const { limit, skip }= paginationDto;
+    return await this.churchRepository.find({
+      where:{},
+      take:limit,
+      skip:skip
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} church`;
+  async findOne(id: string) {
+    return await this.churchRepository.findOneBy({id});
   }
 
   update(id: number, updateChurchDto: UpdateChurchDto) {
     return `This action updates a #${id} church`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} church`;
+  remove(id: string) {
+    return this.churchRepository.delete({id})
   }
 }
