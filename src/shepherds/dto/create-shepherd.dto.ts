@@ -16,7 +16,7 @@ export class CreateShepherdDto {
 
     @IsString()
     @MinLength(2)
-    fullname: string;
+    name: string;
 
     @IsString()
     @MinLength(2)

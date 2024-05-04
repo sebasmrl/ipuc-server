@@ -1,10 +1,11 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { CreateShepherdDto } from './dto/create-shepherd.dto';
-import { UpdateShepherdDto } from './dto/update-shepherd.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Shepherd } from './entities/shepherd.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
+
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { StringModifiers } from 'src/common/helpers';
+import { CreateShepherdDto, UpdateShepherdByAdminDto, UpdateShepherdBySelfDto } from './dto';
 
 @Injectable()
 export class ShepherdsService {
@@ -20,25 +21,43 @@ export class ShepherdsService {
   }
 
   async findAll(paginationDto: PaginationDto) {
-    const { skip, limit } = paginationDto;
+    const { skip=0, limit=10 } = paginationDto;
     return await this.shepherdRepository.find({
-      where: {},
+      where: {  
+      },
       take: limit,
       skip: skip
     });
   }
-
-  findFoo() {
-    return "foo function for test"
+  async findBySearchTerm(paginationDto: PaginationDto, searchTerm: string) {
+    const { skip=0, limit=10 } = paginationDto;
+    return await this.shepherdRepository.find({
+      where: {
+        fullname: Like(`%${StringModifiers.toUpperCase(searchTerm)}%`)
+      },
+      take: limit,
+      skip: skip
+    });
   }
 
   async findOne(id: string) {
     return await this.shepherdRepository.findOneBy({ id })
   }
 
-  update(id: number, updateShepherdDto: UpdateShepherdDto) {
-    return `This action updates a #${id} shepherd`;
+
+
+  async updateSelf(id: string, updateShepherdBySelfDto: UpdateShepherdBySelfDto) {
+    return "BySelf"; 
   }
+
+  async updateAdmin(id: string, updateShepherdByAdminDto: UpdateShepherdByAdminDto) {
+
+    return "byAdmin";
+  }
+
+
+
+
 
   async remove(id: string) {
 
@@ -46,11 +65,11 @@ export class ShepherdsService {
     if (!exist) throw new BadRequestException(`Usuario con id:${id} no existe`);
 
     try {
-      const rs = await this.shepherdRepository.update(id, {
+      await this.shepherdRepository.update(id, {
         isRetired: true,
         dateRetired: new Date()
       });
-      return true;
+      return true; 
     } catch (e) {
       throw new InternalServerErrorException('Ocurrio un error al retirar al pastor')
     }

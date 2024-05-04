@@ -17,10 +17,11 @@ export class Position {
     @Column({type: 'date', nullable:true })
     to: Date;
 
+    @Column({type:'text', array:true, default:['']}) //
+    roles:string[];
 
-    @Column({type: 'text'})
+    @Column({type: 'text', nullable:true})
     committee:string;
-
 
     @ManyToOne(
         ()=>User,

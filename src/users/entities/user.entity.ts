@@ -1,4 +1,4 @@
-import { BeforeInsert, Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 import { Church } from "src/churches/entities/church.entity";
 import { Position } from "src/positions/entities/position.entity";
@@ -17,10 +17,13 @@ export class User {
     password:string;
 
     @Column({ type: 'text' })
-    fullname: string;
-
+    name: string; 
+    
     @Column({ type: 'text' })
     lastname: string;
+    
+    @Column({ type: 'text' })
+    fullname: string;
 
     @Column({ type: 'text' })
     gender:string;
@@ -96,8 +99,17 @@ export class User {
 
     @BeforeInsert()
     beforeUserInsert():void{
-       this.fullname = StringModifiers.toUpperCase(this.fullname);
+       this.name = StringModifiers.toUpperCase(this.name);
        this.lastname = StringModifiers.toUpperCase(this.lastname);
+       this.fullname = `${this.name} ${this.lastname}`
+    }
+
+    @BeforeUpdate()
+    beforeUserUpdate():void{
+       if(this.name) this.name = StringModifiers.toUpperCase(this.name);
+       if(this.lastname) this.lastname = StringModifiers.toUpperCase(this.lastname);
+       
+       this.fullname = `${this.name} ${this.lastname}`
     }
 
 }

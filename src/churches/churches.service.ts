@@ -28,7 +28,7 @@ export class ChurchesService {
   }
 
   async findAll(paginationDto:PaginationDto) {
-    const { limit, skip }= paginationDto;
+    const { limit=10, skip=0 }= paginationDto;
     return await this.churchRepository.find({
       where:{},
       take:limit,

@@ -1,7 +1,8 @@
 import { IsIn } from "class-validator";
 import { Church } from "src/churches/entities/church.entity";
+import { StringModifiers } from "src/common/helpers";
 import { Directive } from "src/directives/entities/directive.entity";
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Shepherd {
@@ -16,11 +17,16 @@ export class Shepherd {
     @Column({ type:'text'})
     password:string;
 
-    @Column({ type: 'text' })
-    fullname: string;
+
+    
+    @Column({ type: 'text'})
+    name: string;
 
     @Column({ type: 'text' })
     lastname: string;
+    
+    @Column({ type: 'text' })
+    fullname: string;
 
     @Column({ type: 'bigint' })
     tel:number;
@@ -84,6 +90,13 @@ export class Shepherd {
    )
    directive:Directive;
     
+
+   @BeforeInsert()
+    beforeUserInsert():void{
+       this.name = StringModifiers.toUpperCase(this.name);
+       this.lastname = StringModifiers.toUpperCase(this.lastname);
+       this.fullname = `${this.name} ${this.lastname}`
+    }
 
     //TODO: LICENCE entity and relation
     //@Column({ type: 'text', default:''})
