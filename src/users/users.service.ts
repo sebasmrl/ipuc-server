@@ -8,11 +8,12 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 
 import { StringModifiers, handlerDbError } from 'src/common/helpers';
-import { UpdateUserByAdmin } from './dto/update-user-by-admin';
+import { PositionsActions, UpdateUserByAdmin } from './dto/update-user-by-admin';
 
 @Injectable()
 export class UsersService {
   
+
   private readonly logger = new Logger('UsersService'); 
 
   constructor(  
@@ -52,7 +53,11 @@ export class UsersService {
 
 
   async findOne(id: string) {
-    return await this.userRepository.findOneBy({id})
+    try {
+      return await this.userRepository.findOneBy({id})
+    } catch (e) {
+      handlerDbError(e, this.logger);
+    }
   }
 
   async findOneByFullNameOrLastname(searchTerm:string){
@@ -113,7 +118,39 @@ export class UsersService {
 
   async updateByAdmin(id: string, updateUserByAdmin: UpdateUserByAdmin){
 
+    const user = await this.findOne(id);
+    const { church, positionsAction, positions, ...data} = updateUserByAdmin;
+
+
+    if((!positions && positionsAction) || (positions && !positionsAction) ) 
+      throw new BadRequestException('Los campos (positions) y (postionsAction) son campos dependientes entre sí');
+
+
+    if(positions && positionsAction){
+      switch(positionsAction) {
+        case PositionsActions.FOR_AGREGATE:
+          console.log('');
+          break;
+        case PositionsActions.FOR_REMOVE:
+          break;
+        case PositionsActions.FOR_FINISHED:
+          break;
+        case PositionsActions.FOR_DELETE:
+          break;
+      }
+    }
+
+    if(church){
+      //TODO: verificar existencia
+    }
+
+    //TODO: realizar el update
+    // return this.findOne(id);
+
   }
+  
+
+
 
 
 
@@ -132,3 +169,4 @@ export class UsersService {
   
 
 }
+

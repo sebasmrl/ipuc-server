@@ -104,12 +104,4 @@ export class User {
        this.fullname = `${this.name} ${this.lastname}`
     }
 
-    @BeforeUpdate()
-    beforeUserUpdate():void{
-       if(this.name) this.name = StringModifiers.toUpperCase(this.name);
-       if(this.lastname) this.lastname = StringModifiers.toUpperCase(this.lastname);
-       
-       this.fullname = `${this.name} ${this.lastname}`
-    }
-
 }

@@ -104,7 +104,13 @@ export class PositionsService {
     return await this.findOne(id);
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} position`;
+  //Permanently delete position
+  async remove(id: string) {
+    try{
+    return await this.positionRepository.delete(id);
+    }catch(e:any){
+      handlerDbError(e, this.logger);
+    }
   }
+
 }

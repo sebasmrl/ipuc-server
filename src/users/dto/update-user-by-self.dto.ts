@@ -6,5 +6,5 @@ export class UpdateUserBySelfDto extends PartialType(CreateUserDto) {
 
     @IsOptional()
     @IsString()
-    fullname:string;
+    fullname?:string;
 }

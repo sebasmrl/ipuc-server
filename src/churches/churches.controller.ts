@@ -18,18 +18,23 @@ export class ChurchesController {
     return this.churchesService.findAll(paginationDto);
   }
 
+  @Get('name/:searchTem')
+  findAllByName(@Param('searchTem') searchTem:string, @Query() paginationDto: PaginationDto) {
+    return this.churchesService.findAllByName(searchTem, paginationDto);
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.churchesService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateChurchDto: UpdateChurchDto) {
-    return this.churchesService.update(+id, updateChurchDto);
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() updateChurchDto: UpdateChurchDto) {
+    return this.churchesService.update(id, updateChurchDto);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.churchesService.remove(id);
+  delete(@Param('id', ParseUUIDPipe) id: string) {
+    return this.churchesService.delete(id);
   }
 }

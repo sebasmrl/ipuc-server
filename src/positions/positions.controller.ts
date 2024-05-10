@@ -28,10 +28,13 @@ export class PositionsController {
     return this.positionsService.findAllByUser(userId, paginationDto);
   }
 
-
-
   @Get(':id')
   findOne(@Param('id') id: string) {
+    return this.positionsService.findOne(id);
+  }
+
+  @Get('self/:id')
+  findOneBySelf(@Param('id') id: string) {
     return this.positionsService.findOne(id);
   }
 
