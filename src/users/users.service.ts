@@ -3,12 +3,11 @@ import { And, DataSource, LessThan, Like, MoreThan, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { User } from './entities/user.entity';
-import { UpdateUserBySelfDto} from './dto/update-user-by-self.dto';
+import { UpdateUserDto} from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 
 import { StringModifiers, handlerDbError } from 'src/common/helpers';
-import { PositionsActions, UpdateUserByAdmin } from './dto/update-user-by-admin';
 
 @Injectable()
 export class UsersService {
@@ -70,9 +69,9 @@ export class UsersService {
     return user;
   }
 
-  async updateBySelf(id: string, updateUserBySelfDto: UpdateUserBySelfDto) {
+  async update(id: string, updateUserDto: UpdateUserDto) {
 
-    const { positions, church, ...rest } = updateUserBySelfDto;
+    const { positions, church, ...rest } = updateUserDto;
     if(positions || church) throw new BadRequestException('Los campos (positions) o (church) no se pueden modificar')
 
     if( Object.keys(rest).length == 0) throw new BadRequestException('El cuerpo de la petición no puede ser vacío');
@@ -115,43 +114,7 @@ export class UsersService {
     return  {...user, ...rest};
 
   }
-
-  async updateByAdmin(id: string, updateUserByAdmin: UpdateUserByAdmin){
-
-    const user = await this.findOne(id);
-    const { church, positionsAction, positions, ...data} = updateUserByAdmin;
-
-
-    if((!positions && positionsAction) || (positions && !positionsAction) ) 
-      throw new BadRequestException('Los campos (positions) y (postionsAction) son campos dependientes entre sí');
-
-
-    if(positions && positionsAction){
-      switch(positionsAction) {
-        case PositionsActions.FOR_AGREGATE:
-          console.log('');
-          break;
-        case PositionsActions.FOR_REMOVE:
-          break;
-        case PositionsActions.FOR_FINISHED:
-          break;
-        case PositionsActions.FOR_DELETE:
-          break;
-      }
-    }
-
-    if(church){
-      //TODO: verificar existencia
-    }
-
-    //TODO: realizar el update
-    // return this.findOne(id);
-
-  }
   
-
-
-
 
 
   async remove(id: string) {
@@ -164,8 +127,6 @@ export class UsersService {
     );
     return true;
   }
-
-
   
 
 }

@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe, Query
 import { UsersService } from './users.service';
 
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
-import { CreateUserDto, UpdateUserBySelfDto, UpdateUserByAdmin } from './dto';
+import { CreateUserDto, UpdateUserDto } from './dto';
 
 @Controller('users')
 export class UsersController {
@@ -35,20 +35,12 @@ export class UsersController {
   }
 
   @Patch(':id')
-  async updateBySelf(
+  async update(
     @Param('id', ParseUUIDPipe) id: string, 
-    @Body() updateUserBySelfDto: UpdateUserBySelfDto
+    @Body() updateUserDto: UpdateUserDto
   ) {
-    const { password, ...data } = await this.usersService.updateBySelf(id, updateUserBySelfDto);
+    const { password, ...data } = await this.usersService.update(id, updateUserDto);
     return data;
-  }
-
-  @Put(':id')
-  updateByAdmin(
-    @Param('id', ParseUUIDPipe) id: string, 
-    @Body() updateUserByAdmin: UpdateUserByAdmin
-  ) {
-    return this.usersService.updateBySelf(id, updateUserByAdmin);
   }
 
 

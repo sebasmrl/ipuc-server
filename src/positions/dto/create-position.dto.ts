@@ -22,12 +22,12 @@ export class CreatePositionDto {
     @IsIn(['LOCAL_USERS_ADMIN', 'LOCAL_USERS_READER', //give shephed
             'LOCAL_PUBLISHER', 'COMMITE_PUBLISHER' , 'LOCAL_PUBLISHER_READER', // boss committee
             'COMMITTEE_ADMIN', 'COMMITTEE_READER' ]) //members committe
-    roles: string[];
+    roles?: string[];
 
     //TODO: Relation with committee
     @IsString()
     @MinLength(3)
-    committee:string;
+    committee?:string;
 
     @IsOptional()
     @IsString()

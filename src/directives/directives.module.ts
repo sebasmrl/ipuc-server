@@ -5,6 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Directive } from './entities/directive.entity';
 import { ShepherdsModule } from 'src/shepherds/shepherds.module';
 
+
+//NOTE: This module is paused for implementation
 @Module({
   imports: [
     TypeOrmModule.forFeature([Directive]),

@@ -1,14 +1,16 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Shepherd } from './entities/shepherd.entity';
 import { Like, Repository } from 'typeorm';
 
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
-import { StringModifiers } from 'src/common/helpers';
-import { CreateShepherdDto, UpdateShepherdByAdminDto, UpdateShepherdBySelfDto } from './dto';
+import { StringModifiers, handlerDbError } from 'src/common/helpers';
+import { CreateShepherdDto, UpdateShepherdDto } from './dto';
 
 @Injectable()
 export class ShepherdsService {
+
+  private readonly logger =  new Logger('ShepherdService');
 
   constructor(
     @InjectRepository(Shepherd)
@@ -46,17 +48,18 @@ export class ShepherdsService {
 
 
 
-  async updateSelf(id: string, updateShepherdBySelfDto: UpdateShepherdBySelfDto) {
-    return "BySelf"; 
+  async update(id: string, updateShepherdDto: UpdateShepherdDto) {
+
+    try {
+       const exist = await this.shepherdRepository.existsBy({id});
+       if(!exist) throw new BadRequestException(`Pastor con id:${id} no existe`);
+
+       await this.shepherdRepository.update( id, updateShepherdDto);
+       return true;
+    } catch (e) {
+        handlerDbError(e, this.logger);
+    }
   }
-
-  async updateAdmin(id: string, updateShepherdByAdminDto: UpdateShepherdByAdminDto) {
-
-    return "byAdmin";
-  }
-
-
-
 
 
   async remove(id: string) {

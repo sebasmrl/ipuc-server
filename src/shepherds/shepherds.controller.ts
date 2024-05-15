@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseUUIDPipe
 import { ShepherdsService } from './shepherds.service';
 
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
-import { CreateShepherdDto, UpdateShepherdBySelfDto, UpdateShepherdByAdminDto } from './dto';
+import { CreateShepherdDto, UpdateShepherdDto } from './dto';
 
 @Controller('shepherds')
 export class ShepherdsController {
@@ -36,14 +36,11 @@ export class ShepherdsController {
   }
 
   @Patch(':id')
-  updateSelf(@Param('id') id: string, @Body() updateShepherdBySelfDto: UpdateShepherdBySelfDto) {
-    return this.shepherdsService.updateSelf(id, updateShepherdBySelfDto);
+  update(@Param('id') id: string, @Body() updateShepherdDto: UpdateShepherdDto) {
+    return this.shepherdsService.update(id, updateShepherdDto);
   }
 
-  @Put(':id')
-  updateAdmin(@Param('id') id: string, @Body() updateShepherdByAdminDto: UpdateShepherdByAdminDto) {
-    return this.shepherdsService.updateAdmin(id, updateShepherdByAdminDto);
-  }
+ 
 
   @Delete(':id')
   remove(@Param('id', ParseUUIDPipe) id: string) {
