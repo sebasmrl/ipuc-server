@@ -12,6 +12,6 @@ import { ChurchesModule } from 'src/churches/churches.module';
   ],
   controllers: [ShepherdsController],
   providers: [ShepherdsService],
-  exports: [ TypeOrmModule]
+  exports: [ TypeOrmModule, ShepherdsService]
 })
 export class ShepherdsModule {}

@@ -28,4 +28,6 @@ npm i @nestjs/typeorm typeorm
 npm install pg
 npm i @nestjs/config
 npm i class-validator class-transformer
+
+npm i @nestjs/passport passport @nestjs/jwt passport-jwt 
 ```

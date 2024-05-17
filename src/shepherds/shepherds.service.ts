@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, Logger, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Shepherd } from './entities/shepherd.entity';
 import { Like, Repository } from 'typeorm';
@@ -77,5 +77,16 @@ export class ShepherdsService {
       throw new InternalServerErrorException('Ocurrio un error al retirar al pastor')
     }
 
+  }
+
+
+  async login(email: string, password: string){
+    const shepherd = await this.shepherdRepository.findOne({
+      where:{
+        email,
+        password
+      }
+    });
+    return shepherd;
   }
 }

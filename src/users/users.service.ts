@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { And, DataSource, LessThan, Like, MoreThan, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -30,6 +30,7 @@ export class UsersService {
       handlerDbError(e, this.logger)
     }
   }
+
 
   async findAll(paginationDto: PaginationDto) {
 
@@ -127,7 +128,23 @@ export class UsersService {
     );
     return true;
   }
+
+
+  //Empty return is managed on auth module
+  async login(email: string, password: string){
+    const user = await this.userRepository.findOne({
+      where:{
+        email,
+        password
+      }
+    });
+    return user;
+  }
   
+  async register(createUserDto: CreateUserDto):Promise<User> {
+    const { positions, church, ...data} = createUserDto;
+    return await this.create(data);
+  }
 
 }
 
